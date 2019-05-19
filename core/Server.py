@@ -197,7 +197,5 @@ class Proxy(object):
 loop = Loop()
 loop.run()
 
-class dev(object):
-    pass
 
 
