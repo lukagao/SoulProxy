@@ -1,6 +1,7 @@
 import socket
 from selectors import DefaultSelector, EVENT_READ, EVENT_WRITE
 from utils.DataUtil import ReqSM, RespSM, Method, buf, Tools, ErrorCode
+import _ssl
 
 
 class Loop(object):
@@ -196,6 +197,3 @@ class Proxy(object):
 
 loop = Loop()
 loop.run()
-
-
-

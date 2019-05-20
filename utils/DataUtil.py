@@ -188,7 +188,7 @@ class Tools(object):
         code_list = pattern.findall(error)
         if code_list:
             return int(code_list[0])
-        return None
+        return 0
 
 buf=b'POST /hhhhhh HTTP/1.1\r\nHost: 192.168.1.175\r\nContent-Type:multipart/form-data; boundary=----WebKitFormBoundaryrGKCBY7qhFd3TrwA\r\nContent-Length:14\r\n\r\nssgsgsgevsvv\r\n------WebKitFormBoundaryrGKCBY7qhFd3TrwA--'
 buf=b'6\r\nqwerty\r\n1\r\na\r\nf\r\nqqqqqqqqwerty15\r\n0\r\n\r\n'
