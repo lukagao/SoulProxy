@@ -1,6 +1,8 @@
-from ssl import SSLContext,SSLSocket,SSL_ERROR_WANT_READ,SSL_ERROR_WANT_WRITE,PROTOCOL_SSLv23
+from ssl import SSLContext,SSLSocket,SSL_ERROR_WANT_READ,SSL_ERROR_WANT_WRITE,PROTOCOL_SSLv23,SSLWantReadError,SSLWantWriteError
 import socket
 from os import path
+from selectors import DefaultSelector, EVENT_READ, EVENT_WRITE
+import time
 import conf
 
 req=b'''
@@ -20,12 +22,43 @@ host='api.passport.pptv.com'
 clientcert=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','soul_client.pem')
 servercert=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','sn_new_server.crt')
 serverkey=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','sn_new_server_key.pem')
-print(clientcert)
 
+selector=DefaultSelector()
 ctx=SSLContext(PROTOCOL_SSLv23)
 ctx.load_cert_chain(certfile=clientcert)
 sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.setblocking(True)
-sock.connect((host,443))
-sc=ctx.wrap_socket(sock,server_side=False)
-sc.do_handshake()
+sock.setblocking(False)
+selector.register(sock,EVENT_WRITE)
+try:
+    sock.connect((host,443))
+except BlockingIOError:
+    pass
+
+while True:
+    events=selector.select(2)
+    if events:
+        break
+selector.unregister(sock)
+
+sc=ctx.wrap_socket(sock,server_side=False,do_handshake_on_connect=False)
+
+selector.register(sc,EVENT_WRITE | EVENT_READ)
+
+while True:
+    events = selector.select(2)
+    if events:
+        try:
+            sc.do_handshake()
+            break
+        except SSLWantReadError:
+            pass
+        except SSLWantWriteError:
+            pass
+selector.unregister(sc)
+print(sc.send(req))
+while True:
+    try:
+        print(sc.recv(2048))
+        break
+    except SSLWantReadError:
+        pass

@@ -1,8 +1,8 @@
 import socket
 from selectors import DefaultSelector, EVENT_READ, EVENT_WRITE
 from utils.DataUtil import ReqSM, RespSM, Method, buf, Tools, ErrorCode
-import _ssl
-
+import ssl
+import conf
 
 class Loop(object):
 
@@ -35,7 +35,7 @@ class Loop(object):
 
     def run(self):
         while True:
-            events = self.selector.select(0)
+            events = self.selector.select(2)
             for key, mask in events:
                 if key.fileobj == self.svr and (mask | EVENT_READ):
                     callback = key.data
@@ -68,7 +68,11 @@ class Proxy(object):
         self.to_svr=None
         self.cursor=0
         self.buf=None
-
+        self.handshake_ok=False
+        #do handshake as https server with client
+        self.to_cli_ctx=ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        #do handshake as htts client with server
+        self.to_svr_ctx=ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     def core(self):
         print('core start')
 
@@ -78,9 +82,15 @@ class Proxy(object):
             '''
             #print('connect method')
             self.to_svr = self.connect_remote(b'127.0.0.1', 443)
-            #response http estabished
-            #self.send_resp(b'')
-            #do handshake
+            yield from self.send_resp(b'HTTP/1.1 200 Connection Established\r\n\r\n')
+            self.to_cli_ctx.load_cert_chain(conf.servercert,conf.serverkey)
+            self.to_cli=self.to_cli_ctx.wrap_socket(self.to_cli,server_side=True,do_handshake_on_connect=False)
+            yield from self.handshake(self.to_cli)
+            self.reqsm = ReqSM()
+            yield from self.read_req()
+            self.to_svr_ctx.load_cert_chain(conf.clientcert)
+            self.to_svr=self.to_svr_ctx.wrap_socket(self.to_svr,server_side=False,do_handshake_on_connect=False)
+            yield from self.handshake(self.to_svr)
         else:
             self.to_svr = self.connect_remote(b'127.0.0.1',5173)
         yield from self.send_req()
@@ -120,6 +130,7 @@ class Proxy(object):
 
     def send_req(self,buf=None):
         #send app request data to server
+        self.selector.register(self.to_svr, EVENT_WRITE, self.on_send)
         if buf:
             self.buf=buf
         else:
@@ -191,8 +202,24 @@ class Proxy(object):
                 pass
             else:
                 raise IOError(str(e))
-        self.selector.register(to_svr, EVENT_WRITE, self.on_send)
         return to_svr
+
+    def on_handshake(self,ss):
+        try:
+            ss.do_handshake()
+            self.engine.set_result(True)
+        except ssl.SSLWantWriteError:
+            self.engine.set_result(False)
+        except ssl.SSLWantReadError:
+            self.engine.set_result(False)
+
+    def handshake(self,ss):
+        self.selector.register(ss,EVENT_READ | EVENT_WRITE,self.on_handshake)
+        while True:
+            r=yield self.engine
+            if r:
+                break
+        self.selector.unregister(ss)
 
 
 loop = Loop()
