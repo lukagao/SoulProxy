@@ -51,8 +51,10 @@ class Engine(object):
         self.core = None
 
     def set_result(self, result):
-        self.core.send(result)
-
+        try:
+            self.core.send(result)
+        except StopIteration:
+            pass
 
 class Proxy(object):
 
@@ -74,28 +76,33 @@ class Proxy(object):
         #do handshake as htts client with server
         self.to_svr_ctx=ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     def core(self):
-        print('core start')
+        #print('core start')
 
         yield from self.read_req()
+        if self.reqsm.Host != b'ms.pptv.com':
+            return None
         if self.reqsm.method==Method.CONNECT:
             '''process HTTPS connect
             '''
-            #print('connect method')
-            self.to_svr = self.connect_remote(b'127.0.0.1', 443)
+            print(b'connect hraders: '+self.reqsm.headers)
+            self.to_svr = self.connect_remote(self.reqsm.Host, 443)
             yield from self.send_resp(b'HTTP/1.1 200 Connection Established\r\n\r\n')
             self.to_cli_ctx.load_cert_chain(conf.servercert,conf.serverkey)
             self.to_cli=self.to_cli_ctx.wrap_socket(self.to_cli,server_side=True,do_handshake_on_connect=False)
             yield from self.handshake(self.to_cli)
-            self.reqsm = ReqSM()
+            self.reqsm.reset()
             yield from self.read_req()
-            self.to_svr_ctx.load_cert_chain(conf.clientcert)
+            #self.to_svr_ctx.load_cert_chain(conf.clientcert)
             self.to_svr=self.to_svr_ctx.wrap_socket(self.to_svr,server_side=False,do_handshake_on_connect=False)
             yield from self.handshake(self.to_svr)
         else:
-            self.to_svr = self.connect_remote(b'127.0.0.1',5173)
+            return
+            self.to_svr = self.connect_remote(self.reqsm.Host,80)
         yield from self.send_req()
         yield from self.read_resp()
         yield from self.send_resp()
+        print(self.reqsm.headers+self.reqsm.data)
+        print(self.respsm.headers+self.respsm.data)
 
 
     def read_req(self):
@@ -103,7 +110,8 @@ class Proxy(object):
         self.selector.register(self.to_cli, EVENT_READ, self.on_read)
         while True:
             chunk = yield self.engine
-            #print(b'request chunk is :'+chunk)
+            if self.reqsm.host == b'ms.pptv.com':
+                print(b'request chunk is :'+chunk)
             if chunk:
                 self.reqsm.data += chunk
                 if self.reqsm.is_finished():
@@ -111,7 +119,8 @@ class Proxy(object):
                     break
             else:
                 #print(b'get nothing!resqm data is '+self.reqsm.data)
-                raise IOError('Client unexpected closed')
+                #raise IOError('Client unexpected closed')
+                pass
         self.selector.unregister(self.to_cli)
 
 
@@ -178,6 +187,7 @@ class Proxy(object):
 
     def on_send(self,s):
         print('send start')
+        print(self.buf)
         try:
             self.engine.set_result(s.send(self.buf[self.cursor:]))
         except IOError as e:
@@ -186,7 +196,7 @@ class Proxy(object):
                 pass
             else:
                 raise IOError(str(e))
-        print(b'send data '+ self.buf[self.cursor:])
+        #print(b'send data '+ self.buf[self.cursor:])
 
     def connect_remote(self,host,port):
         #connect to server
@@ -219,6 +229,7 @@ class Proxy(object):
             r=yield self.engine
             if r:
                 break
+        print('handshake ok')
         self.selector.unregister(ss)
 
 

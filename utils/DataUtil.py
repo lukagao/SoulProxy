@@ -13,7 +13,8 @@ class ReqSM(object):
         self.method=None
         self.path=None
         self.version=None
-    
+        self.host=None
+
     def is_finished(self):
         if not self.header_complete:
             if self.DCRLF in self.data:
@@ -22,6 +23,7 @@ class ReqSM(object):
                 if len(l)>1:
                     self.data=b''.join(l[1:])
                 self.generate_header()
+                self.host=self.Host
                 self.header_complete=True
             else:
                 return False
@@ -67,6 +69,16 @@ class ReqSM(object):
     @property
     def content_type(self):
         return self.header.get(b'Content-Type')
+
+
+    def reset(self):
+        self.data = b''
+        self.headers = None
+        self.header_complete = False
+        self.header = {}
+        self.method = None
+        self.path = None
+        self.version = None
 
         
 class RespSM(object):

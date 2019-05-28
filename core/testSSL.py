@@ -23,6 +23,25 @@ clientcert=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs',
 servercert=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','sn_new_server.crt')
 serverkey=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','sn_new_server_key.pem')
 
+
+
+svr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+svr.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+svr.setblocking(True)
+svr.bind(('0.0.0.0', 5231))
+svr.listen(1000)
+print('start')
+while True:
+    s,addr=svr.accept()
+    connect_req=s.recv(2048)
+    #print(connect_req)
+    if b'ms.pptv.com' in connect_req:
+        print(connect_req)
+        s.send(b'HTTP/1.1 200 Connection Established\r\n\r\n')
+
+
+
+'''
 selector=DefaultSelector()
 ctx=SSLContext(PROTOCOL_SSLv23)
 ctx.load_cert_chain(certfile=clientcert)
@@ -62,3 +81,4 @@ while True:
         break
     except SSLWantReadError:
         pass
+'''
