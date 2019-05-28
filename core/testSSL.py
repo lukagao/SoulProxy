@@ -6,42 +6,30 @@ import time
 import conf
 
 req=b'''
-GET https://api.passport.pptv.com/refreshToken?appver=7.8.0&format=json&appplt=iph&platform=iphone4&refreshToken=b5da0983df8841238e0a76d3e7b0414a&auth=55b7c50dc1adfc3bcabe2d9b2015e35c&appid=com.pptv.iphoneapp HTTP/1.1
-Host: api.passport.pptv.com
-Cookie: _snstyxuid=9729D5428EF67QI2; _snstyxuid=3E29D54288A667A2; __ssav=155292409430254348%7C1552924094302%7C1552924094302%7C1552924094302%7C1%7C1%7C1; _snvd=1552924094671zlnHzVZjMXj; Hm_lvt_7adaa440f53512a144c13de93f4c22db=1552924094; PUID=c121250dcaec4aa78d445afcf0be39b4; __crt=1547478856711
-Connection: keep-alive
-hiro_trace_type: SDK
+POST https://ulogs.umeng.com/unify_logs HTTP/1.1
+Host: ulogs.umeng.com
+Content-Type: ut/a
 Accept: */*
-User-Agent: Browser/7.8.0.1911 (iPhone; iOS 10.3.3; Scale/3.00)
+Connection: keep-alive
+X-Umeng-Sdk: a/5.5.4 7.8.0/iOS/PP%E8%A7%86%E9%A2%91/iPhone8,2/10.3.3 37148931915139B18C75E4F9E30B51A6
+Msg-Type: envelope/json
+X-Umeng-UTC: 1559054937144
 Accept-Language: zh-cn
-hiro_trace_id: 6e6a7530159e48dcbe3b2cc7060b6b0e
+User-Agent: PPTViPhone/7.8.0.1911 CFNetwork/811.5.4 Darwin/16.7.0
 Accept-Encoding: gzip, deflate
+Content-Length: 2
+
+ab
 
 '''
-host='api.passport.pptv.com'
+host='ulogs.umeng.com'
 clientcert=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','soul_client.pem')
 servercert=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','sn_new_server.crt')
 serverkey=path.join(path.abspath(path.dirname(path.dirname(__file__))),'certs','sn_new_server_key.pem')
 
 
 
-svr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-svr.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-svr.setblocking(True)
-svr.bind(('0.0.0.0', 5231))
-svr.listen(1000)
-print('start')
-while True:
-    s,addr=svr.accept()
-    connect_req=s.recv(2048)
-    #print(connect_req)
-    if b'ms.pptv.com' in connect_req:
-        print(connect_req)
-        s.send(b'HTTP/1.1 200 Connection Established\r\n\r\n')
 
-
-
-'''
 selector=DefaultSelector()
 ctx=SSLContext(PROTOCOL_SSLv23)
 ctx.load_cert_chain(certfile=clientcert)
@@ -81,4 +69,27 @@ while True:
         break
     except SSLWantReadError:
         pass
-'''
+
+
+def g1():
+    for i in range(3):
+        yield i
+        print(i)
+    return 1
+
+def g2():
+    for i in range(3,5):
+        yield i
+        print(i)
+
+def g():
+    yield from g1()
+    yield from g2()
+    print('end')
+
+gen=g()
+try:
+    while True:
+        gen.send(None)
+except StopIteration as e:
+    print(e.value)

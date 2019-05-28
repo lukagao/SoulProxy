@@ -3,10 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2670c8f8-8ad9-4a0e-95ca-9cde479219ef" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/conf.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/Server.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/Server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/testSSL.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/testSSL.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/DataUtil.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/DataUtil.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +17,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/Server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="147">
-              <caret line="113" column="44" selection-start-line="113" selection-start-column="44" selection-end-line="113" selection-end-column="44" />
+            <state relative-caret-position="269">
+              <caret line="89" column="46" selection-start-line="89" selection-start-column="46" selection-end-line="89" selection-end-column="46" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -31,7 +29,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/DataUtil.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
+            <state relative-caret-position="296">
               <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
@@ -43,17 +41,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/testSSL.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-160">
-              <caret column="56" selection-start-column="37" selection-end-column="56" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../../Python3/Lib/selectors.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4480">
-              <caret line="285" column="24" selection-start-line="285" selection-start-column="24" selection-end-line="285" selection-end-column="24" />
+            <state relative-caret-position="280">
+              <caret line="93" column="26" lean-forward="true" selection-start-line="93" selection-start-column="26" selection-end-line="93" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#128#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -82,8 +74,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../Python3/Lib/ssl.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17632">
-              <caret line="1116" selection-start-line="1116" selection-end-line="1116" />
+            <state relative-caret-position="1891">
+              <caret line="889" column="19" selection-start-line="889" selection-start-column="14" selection-end-line="889" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -110,6 +102,8 @@
       <find>Connection</find>
       <find>HTTP/1.1 200 Connection Established</find>
       <find>print</find>
+      <find>close</find>
+      <find>pplrec.cnsuning.com</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -125,8 +119,8 @@
       <list>
         <option value="$PROJECT_DIR$/core/testidea.py" />
         <option value="$PROJECT_DIR$/conf.py" />
-        <option value="$PROJECT_DIR$/core/testSSL.py" />
         <option value="$PROJECT_DIR$/utils/DataUtil.py" />
+        <option value="$PROJECT_DIR$/core/testSSL.py" />
         <option value="$PROJECT_DIR$/core/Server.py" />
       </list>
     </option>
@@ -142,7 +136,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -159,6 +152,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -430,7 +424,14 @@
       <option name="project" value="LOCAL" />
       <updated>1558883139147</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="bug fix &amp; host optimize">
+      <created>1559021826905</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1559021826905</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TodoView">
@@ -496,7 +497,8 @@
     <MESSAGE value="add client certs" />
     <MESSAGE value="change client certs" />
     <MESSAGE value="finish logic" />
-    <option name="LAST_COMMIT_MESSAGE" value="finish logic" />
+    <MESSAGE value="bug fix &amp; host optimize" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix &amp; host optimize" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/.PyCharmCE2019.1/system/python_stubs/1920869872/_ssl.py">
@@ -540,16 +542,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../../Python3/Lib/ssl.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17632">
-          <caret line="1116" selection-start-line="1116" selection-end-line="1116" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/DataUtil.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
+        <state relative-caret-position="296">
           <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
@@ -557,17 +552,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../../Python3/Lib/ssl.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1891">
+          <caret line="889" column="19" selection-start-line="889" selection-start-column="14" selection-end-line="889" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/core/testSSL.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-160">
-          <caret column="56" selection-start-column="37" selection-end-column="56" />
+        <state relative-caret-position="280">
+          <caret line="93" column="26" lean-forward="true" selection-start-line="93" selection-start-column="26" selection-end-line="93" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#128#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/Server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="113" column="44" selection-start-line="113" selection-start-column="44" selection-end-line="113" selection-end-column="44" />
+        <state relative-caret-position="269">
+          <caret line="89" column="46" selection-start-line="89" selection-start-column="46" selection-end-line="89" selection-end-column="46" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
