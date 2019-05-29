@@ -5,7 +5,7 @@ class ReqSM(object):
     
     def __init__(self):
         self.data=b''
-        self.headers=None
+        self.headers=b''
         self.CRLF=b'\r\n'
         self.DCRLF=b'\r\n\r\n'
         self.header_complete=False
@@ -13,7 +13,8 @@ class ReqSM(object):
         self.method=None
         self.path=None
         self.version=None
-        self.host=None
+        self.host=b''
+        self.port=80
 
     def is_finished(self):
         if not self.header_complete:
@@ -23,7 +24,8 @@ class ReqSM(object):
                 if len(l)>1:
                     self.data=b''.join(l[1:])
                 self.generate_header()
-                self.host=self.Host
+                self.set_host()
+                self.set_port()
                 self.header_complete=True
             else:
                 return False
@@ -54,7 +56,7 @@ class ReqSM(object):
         if len(l)>1:
             for i in range(1,len(l)):
                 line=l[i].split(b':')
-                self.header[line[0].strip()]=line[1].strip()
+                self.header[line[0].strip()]=b':'.join(line[1:]).strip()
         #print(self.method,self.path,self.version)
         #print(self.header)
             
@@ -62,9 +64,23 @@ class ReqSM(object):
     def content_length(self):
         return int(self.header.get(b'Content-Length'))
 
-    @property
-    def Host(self):
-        return self.header.get(b'Host')
+    def set_host(self):
+        if self.method== Method.CONNECT:
+            self.host = self.path.split(b':')[0].strip()
+        else:
+            self.host = self.header.get(b'Host').split(b':')[0].strip()
+
+
+    def set_port(self):
+        if self.method== Method.CONNECT:
+            self.port = int(self.path.split(b':')[1].strip())
+        else:
+            addr=self.header.get(b'Host').split(b':')
+            if len(addr)==2:
+                self.port = int(addr[1].strip())
+
+
+
 
     @property
     def content_type(self):
@@ -73,7 +89,7 @@ class ReqSM(object):
 
     def reset(self):
         self.data = b''
-        self.headers = None
+        self.headers = b''
         self.header_complete = False
         self.header = {}
         self.method = None
@@ -85,7 +101,7 @@ class RespSM(object):
 
     def __init__(self):
         self.data = b''
-        self.headers = None
+        self.headers = b''
         self.CR = b'\r'
         self.CRLF = b'\r\n'
         self.DCRLF = b'\r\n\r\n'
@@ -116,8 +132,18 @@ class RespSM(object):
             return self.is_chunked_ok()
         else:
             length = self.content_length
-            if length <= len(self.data):
-                return True
+            if length:
+                if length <= len(self.data):
+                    return True
+            else:
+                if self.content_type==ContentType.html:
+                    return self.is_html_ok()
+
+    def is_html_ok(self):
+        if self.data.endswith(b'</HTML>\n'):
+            return True
+        else:
+            return False
 
     def is_chunked_ok(self):
         while True:
@@ -165,7 +191,15 @@ class RespSM(object):
 
     @property
     def content_length(self):
-        return int(self.header.get(b'Content-Length'))
+        cl=self.header.get(b'Content-Length')
+        if cl:
+            return int(cl)
+        else:
+            return None
+    @property
+    def content_type(self):
+        return self.header.get(b'Content-Type')
+
 
 class Method(object):
     GET=b'GET'
@@ -181,6 +215,7 @@ class ContentType(object):
     multipart=b'multipart/form-data'
     json=b'bapplication/json'
     xml=b'text/xml'
+    html=b'text/html'
     urlencoded=b'application/x-www-form-urlencoded'
     chunked=b'chunked'
     gzip=b'gzip'

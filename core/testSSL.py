@@ -70,6 +70,8 @@ while True:
     except SSLWantReadError:
         pass
 
+#selector.unregister(sc)
+#selector.unregister(sc)
 
 def g1():
     for i in range(3):
@@ -93,3 +95,9 @@ try:
         gen.send(None)
 except StopIteration as e:
     print(e.value)
+
+
+b=b'Proxy-Connection'
+b=b'Connection'
+a=b'adadadadad'
+print(a.split(b':'))
