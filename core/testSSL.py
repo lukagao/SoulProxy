@@ -75,26 +75,28 @@ while True:
 
 def g1():
     for i in range(3):
-        yield i
-        print(i)
+        a=yield i
+        print(a)
     return 1
 
 def g2():
     for i in range(3,5):
-        yield i
-        print(i)
+        a = yield i
+        print(a)
 
-def g():
+def g0():
     yield from g1()
     yield from g2()
     print('end')
 
+
+def g():
+    yield from g0()
 gen=g()
-try:
-    while True:
-        gen.send(None)
-except StopIteration as e:
-    print(e.value)
+#print(gen.send(None))
+
+print(gen.send(None))
+print(gen.send(None))
 
 
 b=b'Proxy-Connection'

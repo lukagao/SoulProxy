@@ -232,8 +232,6 @@ class Proxy(object):
             self.is_error=True
             self.output.append(str(e))
 
-
-
     def on_send(self,s):
         try:
             self.engine.set_result(self,s.send(self.buf[self.cursor:]))
