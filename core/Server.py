@@ -81,17 +81,23 @@ class Proxy(object):
         self.cursor=0
         self.buf=None
         self.handshake_ok=False
-        #do handshake as https server with client
-        self.to_cli_ctx=ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-        #do handshake as htts client with server
-        self.to_svr_ctx=ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         self.is_error = False
         self.error = None
         self.output=[]
+        self.which=0
+        self.support=True
 
+    #to do:
+    #now ,do not use keep alive(should send Connection:close), if need this ,
+    #a while loop is nessary,and should not close the conn after response to client.
     def core(self):
         yield from self.read_req()
-        if self.reqsm.host in [b'apm.suning.cn',b'sportlive.suning.com',b'ulogs.umengcloud.com',b'click.suning.cn',b'bpus.pptv.com',b'ssac.suning.com',b'pancake.apple.com',b'snsis.suning.com',b'ulogs.umeng.com',b'p29-buy.itunes.apple.com',b'e.crashlytics.com',b'gsp64-ssl.ls.apple.com']:
+        if self.reqsm.host in [b'e.crashlytics.com',b'ssac.suning.com',b'pancake.apple.com',b'p29-buy.itunes.apple.com',b'gsp64-ssl.ls.apple.com']:
+            self.support=False
+            self.output.append(b'connect hraders: ' + self.reqsm.headers)
+            #self.to_svr = self.connect_remote(self.reqsm.host, self.reqsm.port)
+            #yield from self.send_resp(b'HTTP/1.1 200 Connection Established\r\n\r\n')
+            #yield from self.tunnel()
             self.end()
             return 0
         else:
@@ -101,13 +107,17 @@ class Proxy(object):
                 self.output.append(b'connect hraders: ' + self.reqsm.headers)
                 self.to_svr = self.connect_remote(self.reqsm.host, self.reqsm.port)
                 yield from self.send_resp(b'HTTP/1.1 200 Connection Established\r\n\r\n')
-                self.to_cli_ctx.load_cert_chain(conf.servercert, conf.serverkey)
-                self.to_cli = self.to_cli_ctx.wrap_socket(self.to_cli, server_side=True, do_handshake_on_connect=False)
+                # do handshake as https server with client
+                to_cli_ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+                to_cli_ctx.load_cert_chain(conf.servercert, conf.serverkey)
+                self.to_cli = to_cli_ctx.wrap_socket(self.to_cli, server_side=True, do_handshake_on_connect=False)
                 yield from self.handshake(self.to_cli)
                 self.reqsm.reset()
                 yield from self.read_req()
-                self.to_svr_ctx.load_cert_chain(conf.clientcert)
-                self.to_svr = self.to_svr_ctx.wrap_socket(self.to_svr, server_side=False, do_handshake_on_connect=False)
+                # do handshake as htts client with server
+                to_svr_ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+                to_svr_ctx.load_cert_chain(conf.clientcert)
+                self.to_svr = to_svr_ctx.wrap_socket(self.to_svr, server_side=False, do_handshake_on_connect=False)
                 yield from self.handshake(self.to_svr)
             else:
                 self.to_svr = self.connect_remote(self.reqsm.host, self.reqsm.port)
@@ -115,6 +125,23 @@ class Proxy(object):
             yield from self.read_resp()
             yield from self.send_resp()
             return 1
+
+    def tunnel(self):
+        self.selector.register(self.to_cli,EVENT_READ,self.on_read)
+        self.selector.register(self.to_svr,EVENT_READ,self.on_read)
+        while True:
+            chunk = yield self.which
+            if chunk:
+                if self.which==0:
+                    yield from self.send_req(chunk)
+                else:
+                    yield from self.send_resp(chunk)
+            else:
+                self.is_error = True
+                self.output.append(str(self.which)+' unexpected closed.')
+                break
+        self.selector.unregister(self.to_cli)
+        self.selector.unregister(self.to_svr)
 
     def read_req(self):
         #read request data from app
@@ -186,6 +213,10 @@ class Proxy(object):
         self.selector.unregister(self.to_cli)
 
     def on_read(self,s):
+        if s==self.to_cli:
+            self.which=0
+        else:
+            self.which=1
         try:
             self.engine.set_result(self,s.recv(2048))
         except ssl.SSLWantReadError:
