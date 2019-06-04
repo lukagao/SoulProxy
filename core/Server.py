@@ -30,19 +30,12 @@ class Loop(object):
         # self.selector.register(self.conn, EVENT_READ, self.on_read)
         #print(conn.fileno(), addr)
 
-    def on_read(self, s):
-        pass
-
     def run(self):
         while True:
             events = self.selector.select(2)
             for key, mask in events:
-                if key.fileobj == self.svr and (mask | EVENT_READ):
-                    callback = key.data
-                    callback(key.fileobj)
-                else:
-                    callback = key.data
-                    callback(key.fileobj)
+                callback = key.data
+                callback(key.fileobj)
 
 
 class Engine(object):
@@ -55,20 +48,20 @@ class Engine(object):
             if not proxy.is_error:
                 self.core.send(result)
             else:
-                if not proxy.support:
-                    proxy.show()
-                    proxy.end()
+                proxy.show()
+                proxy.end()
+                del proxy
         except StopIteration as e:
             sr=e.value
             if sr==0:
                 pass
-                #print(b'do not support this host: '+proxy.reqsm.host)
+            elif sr==1:
+                pass
             else:
                 pass
-                #print('Success process!')
-            if not proxy.support:
-                proxy.show()
-                proxy.end()
+            proxy.show()
+            proxy.end()
+            del proxy
 
 class Proxy(object):
 
@@ -88,16 +81,23 @@ class Proxy(object):
         self.is_error = False
         self.error = None
         self.output=[]
+        #0:client,1:server
         self.which=0
         self.support=True
+        #0:http,1:https,-1:unknown
+        self.protocol=0
 
     #to do:
     #now ,do not use keep alive(should send Connection:close), if need this ,
     #a while loop is nessary,and should not close the conn after response to client.
     def core(self):
         yield from self.read_req()
+        if not self.reqsm.host:
+            self.protocol=-1
+            return -1
         if self.reqsm.host in conf.unsupport and self.reqsm.method==Method.CONNECT:
             self.support=False
+            self.protocol=1
             self.output.append(b'do not support: '+self.reqsm.host)
             self.output.append(b'connect hraders: ' + self.reqsm.headers)
             self.to_svr = self.connect_remote(self.reqsm.host, self.reqsm.port)
@@ -109,6 +109,7 @@ class Proxy(object):
             if self.reqsm.method == Method.CONNECT:
                 '''process HTTPS connectdo not support
                 '''
+                self.protocol=1
                 self.output.append(b'connect hraders: ' + self.reqsm.headers)
                 self.to_svr = self.connect_remote(self.reqsm.host, self.reqsm.port)
                 yield from self.send_resp(b'HTTP/1.1 200 Connection Established\r\n\r\n')
@@ -141,21 +142,13 @@ class Proxy(object):
             self.selector.unregister(self.to_cli)
             if chunk:
                 if self.which==0:
-                    print(b'data from client: '+ self.reqsm.host)
-                    print(chunk)
                     self.reqsm.data+=chunk
                     yield from self.send_req(chunk)
-                    print('finish send request')
                 else:
-                    print(b'data from Server: '+ self.reqsm.host)
-                    print(chunk)
                     self.respsm.data+=chunk
                     yield from self.send_resp(chunk)
-                    print('finish send response')
             else:
-                self.is_error = True
-                print('unexpected closed.')
-                self.output.append(str(self.which)+' unexpected closed.')
+                self.output.append(str(self.which)+' closed.')
                 break
 
     def read_req(self):
@@ -288,9 +281,10 @@ class Proxy(object):
         except ssl.SSLWantReadError:
             self.engine.set_result(self,False)
         except Exception as e:
-            self.engine.set_result(self,False)
-            self.is_error=True
+            self.is_error = True
             self.output.append(str(e))
+            self.engine.set_result(self,False)
+
 
     def handshake(self,ss):
         self.selector.register(ss,EVENT_READ | EVENT_WRITE,self.on_handshake)

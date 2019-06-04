@@ -150,6 +150,11 @@ class RespSM(object):
             shif = 1
             cursor = self.cursor
             try:
+                try:
+                    if int(self.data[cursor:], 16)==0:
+                        return True
+                except ValueError:
+                    pass
                 while self.data[cursor + shif] != self.CR[0]:
                     shif += 1
                 size = int(self.data[cursor:cursor + shif], 16)
