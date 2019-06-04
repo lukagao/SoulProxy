@@ -55,9 +55,9 @@ class Engine(object):
             if not proxy.is_error:
                 self.core.send(result)
             else:
-                pass
-                #proxy.show()
-                #proxy.end()
+                if not proxy.support:
+                    proxy.show()
+                    proxy.end()
         except StopIteration as e:
             sr=e.value
             if sr==0:
@@ -96,14 +96,14 @@ class Proxy(object):
     #a while loop is nessary,and should not close the conn after response to client.
     def core(self):
         yield from self.read_req()
-        if self.reqsm.host in [b'e.crashlytics.com',b'ssac.suning.com',b'pancake.apple.com',b'p29-buy.itunes.apple.com',b'gsp64-ssl.ls.apple.com']:
+        if self.reqsm.host in conf.unsupport and self.reqsm.method==Method.CONNECT:
             self.support=False
             self.output.append(b'do not support: '+self.reqsm.host)
             self.output.append(b'connect hraders: ' + self.reqsm.headers)
             self.to_svr = self.connect_remote(self.reqsm.host, self.reqsm.port)
             yield from self.send_resp(b'HTTP/1.1 200 Connection Established\r\n\r\n')
+            self.reqsm.reset()
             yield from self.tunnel()
-            self.end()
             return 0
         else:
             if self.reqsm.method == Method.CONNECT:
@@ -133,19 +133,22 @@ class Proxy(object):
 
     def tunnel(self):
         print('start tunnel')
-        self.selector.register(self.to_cli,EVENT_READ,self.on_read)
-        self.selector.register(self.to_svr,EVENT_READ,self.on_read)
         while True:
+            self.selector.register(self.to_cli, EVENT_READ, self.on_read)
+            self.selector.register(self.to_svr, EVENT_READ, self.on_read)
             chunk = yield self.which
+            self.selector.unregister(self.to_svr)
+            self.selector.unregister(self.to_cli)
             if chunk:
                 if self.which==0:
-                    print(self.reqsm.host+b'data from client')
+                    print(b'data from client: '+ self.reqsm.host)
                     print(chunk)
                     self.reqsm.data+=chunk
                     yield from self.send_req(chunk)
                     print('finish send request')
                 else:
-                    print(self.reqsm.host+b'data from server')
+                    print(b'data from Server: '+ self.reqsm.host)
+                    print(chunk)
                     self.respsm.data+=chunk
                     yield from self.send_resp(chunk)
                     print('finish send response')
@@ -154,8 +157,6 @@ class Proxy(object):
                 print('unexpected closed.')
                 self.output.append(str(self.which)+' unexpected closed.')
                 break
-        self.selector.unregister(self.to_cli)
-        self.selector.unregister(self.to_svr)
 
     def read_req(self):
         #read request data from app
@@ -190,8 +191,6 @@ class Proxy(object):
 
     def send_req(self,buf=None):
         #send app request data to server
-        if not self.support:
-            print('start send req')
         self.selector.register(self.to_svr, EVENT_WRITE, self.on_send)
         if buf:
             self.buf=buf
@@ -211,8 +210,6 @@ class Proxy(object):
 
     def send_resp(self,buf=None):
         #send server response data to app
-        if not self.support:
-            print('start send req')
         self.selector.register(self.to_cli,EVENT_WRITE,self.on_send)
         if buf:
             self.buf=buf
