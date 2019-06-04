@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2670c8f8-8ad9-4a0e-95ca-9cde479219ef" name="Default Changelist" comment="add tuunel">
+    <list default="true" id="2670c8f8-8ad9-4a0e-95ca-9cde479219ef" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/Server.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/Server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/testSSL.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/testSSL.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,11 +13,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/Server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1046">
-              <caret line="232" column="38" selection-start-line="232" selection-start-column="38" selection-end-line="232" selection-end-column="38" />
+            <state relative-caret-position="419">
+              <caret line="155" column="21" lean-forward="true" selection-start-line="155" selection-start-column="21" selection-end-line="155" selection-end-column="21" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -29,7 +28,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/DataUtil.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1648">
+            <state relative-caret-position="1664">
               <caret line="104" column="23" selection-start-line="104" selection-start-column="23" selection-end-line="104" selection-end-column="23" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
@@ -38,11 +37,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/testSSL.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="94" column="7" lean-forward="true" selection-start-line="94" selection-start-column="7" selection-end-line="94" selection-end-column="7" />
+            <state relative-caret-position="1504">
+              <caret line="94" column="7" selection-start-line="94" selection-start-column="7" selection-end-line="94" selection-end-column="7" />
               <folding>
                 <element signature="e#0#128#0" expanded="true" />
               </folding>
@@ -62,7 +61,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$APPLICATION_HOME_DIR$/helpers/typeshed/stdlib/2and3/ssl.pyi">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3424">
+            <state relative-caret-position="3488">
               <caret line="218" column="47" selection-start-line="218" selection-start-column="34" selection-end-line="218" selection-end-column="47" />
               <folding>
                 <element signature="e#17#111#0" expanded="true" />
@@ -121,6 +120,7 @@
       <find>Generator</find>
       <find>host</find>
       <find>Method</find>
+      <find>do not support</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -137,15 +137,16 @@
         <option value="$PROJECT_DIR$/core/testidea.py" />
         <option value="$PROJECT_DIR$/conf.py" />
         <option value="$PROJECT_DIR$/utils/DataUtil.py" />
-        <option value="$PROJECT_DIR$/core/Server.py" />
         <option value="$PROJECT_DIR$/core/testSSL.py" />
+        <option value="$PROJECT_DIR$/core/Server.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-12" />
-    <option name="width" value="981" />
-    <option name="height" value="1032" />
+    <option name="x" value="15" />
+    <option name="y" value="30" />
+    <option name="width" value="1890" />
+    <option name="height" value="960" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -175,7 +176,7 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../tools" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.BrowseWordAtCaret" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -195,7 +196,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.testSSL">
+  <component name="RunManager" selected="Python.Server">
     <configuration name="DataUtil" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SoulProxy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -290,7 +291,7 @@
     </recent_temporary>
   </component>
   <component name="SvnConfiguration">
-    <configuration />
+    <configuration>C:\Users\Phoebe Tse\AppData\Roaming\Subversion</configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -468,7 +469,14 @@
       <option name="project" value="LOCAL" />
       <updated>1559320440137</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="test yield from">
+      <created>1559322342254</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1559322342254</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TodoView">
@@ -537,7 +545,8 @@
     <MESSAGE value="bug fix &amp; host optimize" />
     <MESSAGE value="bug fix" />
     <MESSAGE value="add tuunel" />
-    <option name="LAST_COMMIT_MESSAGE" value="add tuunel" />
+    <MESSAGE value="test yield from" />
+    <option name="LAST_COMMIT_MESSAGE" value="test yield from" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/.PyCharmCE2019.1/system/python_stubs/1920869872/_ssl.py">
@@ -580,8 +589,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/core/Server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1046">
-          <caret line="232" column="38" selection-start-line="232" selection-start-column="38" selection-end-line="232" selection-end-column="38" />
+        <state relative-caret-position="419">
+          <caret line="155" column="21" lean-forward="true" selection-start-line="155" selection-start-column="21" selection-end-line="155" selection-end-column="21" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
@@ -590,10 +599,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/DataUtil.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1648">
+        <state relative-caret-position="1664">
           <caret line="104" column="23" selection-start-line="104" selection-start-column="23" selection-end-line="104" selection-end-column="23" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/testSSL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1504">
+          <caret line="94" column="7" selection-start-line="94" selection-start-column="7" selection-end-line="94" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#128#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -607,7 +626,7 @@
     </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/typeshed/stdlib/2and3/ssl.pyi">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3424">
+        <state relative-caret-position="3488">
           <caret line="218" column="47" selection-start-line="218" selection-start-column="34" selection-end-line="218" selection-end-column="47" />
           <folding>
             <element signature="e#17#111#0" expanded="true" />
@@ -626,16 +645,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="14000">
           <caret line="889" column="19" selection-start-line="889" selection-start-column="14" selection-end-line="889" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/testSSL.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="94" column="7" lean-forward="true" selection-start-line="94" selection-start-column="7" selection-end-line="94" selection-end-column="7" />
-          <folding>
-            <element signature="e#0#128#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
