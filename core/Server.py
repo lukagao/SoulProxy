@@ -270,6 +270,9 @@ class Proxy(object):
                 pass
             else:
                 raise IOError(str(e))
+        except Exception as e:
+            self.is_error=True
+            self.output.append(str(e))
         return to_svr
 
     def on_handshake(self,ss):
