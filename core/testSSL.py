@@ -4,6 +4,9 @@ from os import path
 from selectors import DefaultSelector, EVENT_READ, EVENT_WRITE
 import time
 import conf
+import re
+import chardet
+import types
 
 req=b'''
 POST https://ulogs.umeng.com/unify_logs HTTP/1.1
@@ -98,8 +101,11 @@ gen=g()
 print(gen.send(None))
 print(gen.send(None))
 
+pattern=re.compile(b'POST \S*')
+print(pattern.findall(req))
+a='sdf双方'
+print(type(a)==str)
+a,b=('a','b')
+print(a)
+print(b)
 
-b=b'Proxy-Connection'
-b=b'Connection'
-a=b'adadadadad'
-print(a.split(b':'))

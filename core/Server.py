@@ -1,8 +1,9 @@
 import socket
 from selectors import DefaultSelector, EVENT_READ, EVENT_WRITE
-from utils.DataUtil import ReqSM, RespSM, Method, buf, Tools, ErrorCode
+from utils.DataUtil import ReqSM, RespSM, Method, Tools, ErrorCode
 import ssl
 import conf
+import re
 
 class Loop(object):
 
@@ -63,8 +64,31 @@ class Engine(object):
             proxy.end()
             del proxy
 
+class CallBack(object):
+
+    def __init__(self,**kwargs):
+        method,host,path,query,regx = (
+            kwargs.get('method'),
+            kwargs.get('host'),
+            kwargs.get('path'),
+            kwargs.get('query'),
+            kwargs.get('regx')
+        )
+        self.method=method
+        self.host = host.encode() if type(host)==str else host
+        self.path = path.encode() if type(path) == str else path
+        self.query = query.encode() if type(query) == str else query
+        self.regx = regx.encode() if type(regx) == str else regx
+
+
+
+    def invoke(self,data):
+        return self.method(data)
+
 class Proxy(object):
 
+    __bf_cbs=[]
+    __af_cbs=[]
     def __init__(self, conn):
         self.to_cli = conn
         self.CRLF = b'\r\n'
@@ -86,6 +110,24 @@ class Proxy(object):
         self.support=True
         #0:http,1:https,-1:unknown
         self.protocol=0
+
+    @classmethod
+    def set_cb_before_request(cls,method,host=None,path=None,query=None,regx=None,**kwargs):
+        args = [method, host, path, query, regx]
+        names = Proxy.set_cb_after_response.__code__.co_varnames[1:]
+        for index in range(len(args)):
+            kwargs[names[index]] = args[index]
+        cls.__bf_cbs.append(CallBack(**kwargs))
+
+    @classmethod
+    def set_cb_after_response(cls,method,host=None,path=None,query=None,regx=None,**kwargs):
+        args=[method,host,path,query,regx]
+        names=Proxy.set_cb_after_response.__code__.co_varnames[1:]
+        for index in range(len(args)):
+            kwargs[names[index]]=args[index]
+        print(kwargs)
+        cls.__af_cbs.append(CallBack(**kwargs))
+
 
     #to do:
     #now ,do not use keep alive(should send Connection:close), if need this ,
@@ -127,8 +169,10 @@ class Proxy(object):
                 yield from self.handshake(self.to_svr)
             else:
                 self.to_svr = self.connect_remote(self.reqsm.host, self.reqsm.port)
+            self.do_bf_cbs()
             yield from self.send_req()
             yield from self.read_resp()
+            self.do_af_cbs()
             yield from self.send_resp()
             return 1
 
@@ -298,6 +342,46 @@ class Proxy(object):
         self.output.append(self.reqsm.host+b': handshake ok')
         self.selector.unregister(ss)
 
+    def is_cb_match(self,cb):
+        if cb.method is None:
+            return False
+        host, path, query, regx = (cb.host, cb.path, cb.query, cb.regx)
+        if host:
+            patt = re.compile(host)
+            if not patt.findall(self.reqsm.host):
+                return False
+        l = self.reqsm.path.split(b'?')
+        req_path = l[0]
+        req_query = b''
+        if len(l) >= 2:
+            req_query = l[1]
+        if path:
+            patt = re.compile(path)
+            if not patt.findall(req_path):
+                return False
+        if query:
+            patt = re.compile(query)
+            if not patt.findall(req_query):
+                return False
+        if regx:
+            patt = re.compile(regx)
+            if not patt.findall(self.reqsm.headers + self.reqsm.DCRLF + self.reqsm.data):
+                return False
+        return True
+
+
+    def do_bf_cbs(self):
+        if self.__bf_cbs:
+            for cb in self.__bf_cbs:
+                if self.is_cb_match(cb):
+                    cb.invoke(self.reqsm)
+
+    def do_af_cbs(self):
+        if self.__af_cbs:
+            for cb in self.__af_cbs:
+                if self.is_cb_match(cb):
+                    cb.invoke(self.respsm)
+
     def show(self):
         print('---------------------------------------------------------------------------------------------------------------')
         self.output.append(b'Host: '+self.reqsm.host+b' Port: '+str(self.reqsm.port).encode())
@@ -320,4 +404,5 @@ class Proxy(object):
 
 
 loop = Loop()
-loop.run()
+#loop.run()
+Proxy.set_cb_after_response('ggg','aaaa')
